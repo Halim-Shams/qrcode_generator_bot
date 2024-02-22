@@ -5,9 +5,10 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Messa
 import qrcode
 
 
+# about: Send me a text or link and I'll convert it to a Qrcode for you!
 
-API_TOKEN = '5487417291:AAGEKMm2IRpt83B0EKC8CFoLs_y3bbvTfFE'
-BOT_USERNAME = '@halim_bunny_bot'
+API_TOKEN = '7183725014:AAEgFg_-VjQdFo3luxW8Ms7V-nFIbcRnsEo'
+BOT_USERNAME = '@qrcode_generat0r_bot'
 
 # Qrcode generator
 def qrcode_generator(text: str):
