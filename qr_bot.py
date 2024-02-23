@@ -8,8 +8,8 @@ import numpy as np
 
 
 
-API_TOKEN = '7183725014:AAEgFg_-VjQdFo3luxW8Ms7V-nFIbcRnsEo'
-BOT_USERNAME = '@qrcode_generat0r_bot'
+API_TOKEN = os.environ['API_TOKEN']
+BOT_USERNAME = os.environ['BOT_USERNAME']
 
 # Qrcode generator
 def qrcode_generator(text: str):
