@@ -3,9 +3,9 @@ from threading import Timer
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 import qrcode
-import cv2, urllib.request
 import numpy as np
 from dotenv import load_dotenv, dotenv_values
+import cv2, urllib.request
 
 load_dotenv()
 
