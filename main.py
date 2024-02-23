@@ -45,7 +45,7 @@ def delete_photo():
 # /start
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f'Hey dear {update.effective_user.first_name}, send me a text or link to hand you a QR code in return. Or, send me a QR code to hand you back the data :)')
-    
+    print(update.effective_user.id)
 
 # /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
