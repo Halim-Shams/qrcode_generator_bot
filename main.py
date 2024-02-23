@@ -5,11 +5,13 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Messa
 import qrcode
 import cv2, urllib.request
 import numpy as np
+from dotenv import load_dotenv, dotenv_values
+
+load_dotenv()
 
 
-
-API_TOKEN = os.environ['API_TOKEN']
-BOT_USERNAME = os.environ['BOT_USERNAME']
+API_TOKEN = os.getenv("API_TOKEN")
+BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
