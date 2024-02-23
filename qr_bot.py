@@ -3,9 +3,10 @@ from threading import Timer
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 import qrcode
+import cv2, urllib.request
+import numpy as np
 
 
-# about: Send me a text or link and I'll convert it to a Qrcode for you!
 
 API_TOKEN = '7183725014:AAEgFg_-VjQdFo3luxW8Ms7V-nFIbcRnsEo'
 BOT_USERNAME = '@qrcode_generat0r_bot'
@@ -14,8 +15,21 @@ BOT_USERNAME = '@qrcode_generat0r_bot'
 def qrcode_generator(text: str):
     qrcode_img = qrcode.make(text)
     qrcode_img.save('qr.png')  
+    
+# Qrcode detector/reader 
+def qr_detector(url):
+    try:
+        url_response = urllib.request.urlopen(url)
+        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+        img_byte = cv2.imdecode(img_array, -1)
+        img = img_byte
+        detect = cv2.QRCodeDetector()
+        value, points, straight_qrcode = detect.detectAndDecode(img)
+        return value
+    except:
+        return
+        
      
-
 # Delete the photo
 def delete():
     os.remove('qr.png')
@@ -43,21 +57,36 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # handle reply
 async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type
-    text = update.message.text
     
-    if message_type == 'supergroup':
-        if BOT_USERNAME in text:
-            new_text = text.replace(BOT_USERNAME, '').strip()
-            qrcode_generator(new_text)
+    if update.message.photo:
+        photo = update.message.photo[0]
+        await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='typing')
+        print('photo detected')
+        file_id = photo.file_id
+        file_path = await context.bot.get_file(file_id=file_id)
+        qrcode_photo = file_path.file_path
+        decoded_data = qr_detector(qrcode_photo)
+        print(decoded_data)
+        await update.message.reply_text(decoded_data, reply_to_message_id=update.message.message_id)
+        
+    elif update.message.text:
+        text = update.message.text
+        print('text detected')
+        if message_type == 'supergroup':
+            await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
+            if BOT_USERNAME in text:
+                new_text = text.replace(BOT_USERNAME, '').strip()
+                qrcode_generator(new_text)
+                await update.message.reply_photo('qr.png')
+                delete_photo()
+            else:
+                return
+        else:
+            await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
+            qrcode_generator(text)
             await update.message.reply_photo('qr.png')
             delete_photo()
-        else:
-            return
-    else:
-        await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
-        qrcode_generator(text)
-        await update.message.reply_photo('qr.png')
-        delete_photo()
+    
         
 
 
@@ -66,6 +95,6 @@ if __name__ == '__main__':
     app = ApplicationBuilder().token(API_TOKEN).build()
     app.add_handler(CommandHandler('start', start_command))
     app.add_handler(CommandHandler('help', help_command))
-    app.add_handler(MessageHandler(filters.TEXT, handle_reply))
+    app.add_handler(MessageHandler(filters.ALL, handle_reply))
     print('Polling...')
     app.run_polling()
