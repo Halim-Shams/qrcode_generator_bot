@@ -13,6 +13,9 @@ load_dotenv()
 API_TOKEN = os.getenv("API_TOKEN")
 BOT_USERNAME = os.getenv("BOT_USERNAME")
 
+print(API_TOKEN)
+print(BOT_USERNAME)
+
 # Qrcode generator
 def qrcode_generator(text: str):
     qrcode_img = qrcode.make(text)
