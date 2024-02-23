@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 import qrcode
 import numpy as np
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 import cv2, urllib.request
 
 load_dotenv()

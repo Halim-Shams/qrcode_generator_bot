@@ -1,4 +1,4 @@
 python-telegram-bot
 qrcode
-opencv-python
+opencv-python-headless
 python-dotenv
