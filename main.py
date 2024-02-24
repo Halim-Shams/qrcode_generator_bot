@@ -6,7 +6,9 @@ import qrcode
 import numpy as np
 from dotenv import load_dotenv
 import cv2, urllib.request
+import speech_recognition
 
+recognizer = speech_recognition.Recognizer()
 load_dotenv()
 
 
@@ -59,6 +61,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # handle reply
 async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type
+    print(update.message)
     
     if update.message.photo:
         photo = update.message.photo[0]
