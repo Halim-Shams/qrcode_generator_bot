@@ -2,3 +2,5 @@ python-telegram-bot
 qrcode
 opencv-python-headless
 python-dotenv
+soundfile
+speech_recognition
