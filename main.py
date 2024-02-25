@@ -66,7 +66,7 @@ def delete_file(filename: str):
 
 # /start
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f'Hey dear {update.effective_user.first_name}, send me a text or link to hand you a QR code in return. Or, send me a QR code to hand you back the data :)')
+    await update.message.reply_text(f'Hey dear {update.effective_user.first_name}, send me a text or link to hand you a QR code in return. Or, send me a QR code to hand you back the data. You can even send me your voice 🎙️ to convert it to QR code. 😉')
     print(update.effective_user.username)
 
 # /help
@@ -74,6 +74,12 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_text ='''
 /start - For starting the bot.
 /help - For how to use this bot.
+
+🟡 Send me a QR code photo (keep it clear by cropping it) and I will return the data of that QR code.
+🟡 Send me a text, link or whatever else that is written to convert it to QR code photo.
+🟡 If you're lazy to type, just record your voice and I'll convert your voice to QR code photo.
+
+Note: audio file is not supported yet, record your voice and send it to me.
 '''
     await update.message.reply_text(help_text)
     
