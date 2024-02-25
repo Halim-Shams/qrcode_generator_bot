@@ -10,12 +10,6 @@ import speech_recognition
 import soundfile
 
 
-load_dotenv()
-
-API_TOKEN = os.getenv("API_TOKEN")
-BOT_USERNAME = os.getenv("BOT_USERNAME")
-
-
 
 # Covert audio to speech
 recognizer = speech_recognition.Recognizer()
@@ -34,6 +28,12 @@ def speech_to_text(audio: str):
 def convert_to_wav(old_audio: str, new_audio: str):
     data, samplerate = soundfile.read(old_audio)
     soundfile.write(new_audio, data, samplerate, subtype='PCM_16')
+
+
+load_dotenv()
+
+API_TOKEN = os.getenv("API_TOKEN")
+BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
