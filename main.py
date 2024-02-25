@@ -7,13 +7,36 @@ import numpy as np
 from dotenv import load_dotenv
 import cv2, urllib.request
 import speech_recognition
+import soundfile
 
+
+
+# Covert audio to speech
 recognizer = speech_recognition.Recognizer()
+def speech_to_text(audio: str):
+    try:
+        with speech_recognition.AudioFile(audio) as file:
+            recognized_audio = recognizer.record(file)
+            recognized_text = recognizer.recognize_google(recognized_audio)
+            
+        return recognized_text
+    except speech_recognition.UnknownValueError:
+        print("error happened")
+
+
+# Covert ogg to wav audio
+def convert_to_wav(old_audio: str, new_audio: str):
+    data, samplerate = soundfile.read(old_audio)
+    soundfile.write(new_audio, data, samplerate, subtype='PCM_16')
+
+
 load_dotenv()
 
+API_TOKEN = "7183725014:AAF9Q18sR2V3xCDnASIh_4B4-z5UyWbKvXQ"
+BOT_USERNAME = "@qrcode_generat0r_bot"
 
-API_TOKEN = os.getenv("API_TOKEN")
-BOT_USERNAME = os.getenv("BOT_USERNAME")
+# API_TOKEN = os.getenv("API_TOKEN")
+# BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
@@ -32,14 +55,14 @@ def qr_detector(url):
         return value
     except:
         return
-        
-     
-# Delete the photo
-def delete():
-    os.remove('qr.png')
+    
 
 # Delete photo after 3sec
-def delete_photo():
+def delete_file(filename: str):
+    # Delete the photo
+    def delete(filename=filename):
+        os.remove(filename)
+    
     t = Timer(3.0, delete)
     t.start()
 
@@ -61,7 +84,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # handle reply
 async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type
-    print(update.message)
     
     if update.message.photo:
         photo = update.message.photo[0]
@@ -83,16 +105,29 @@ async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 new_text = text.replace(BOT_USERNAME, '').strip()
                 qrcode_generator(new_text)
                 await update.message.reply_photo('qr.png')
-                delete_photo()
+                delete_file('qr.png')
             else:
                 return
         else:
             await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
             qrcode_generator(text)
             await update.message.reply_photo('qr.png')
-            delete_photo()
-    
-        
+            delete_file('qr.png')
+    elif update.message.voice:
+        await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
+        print('voice detected')
+        voice = update.message.voice
+        voice_id = voice.file_id
+        voice_path = await context.bot.get_file(voice_id)
+        await voice_path.download_to_drive('old_audio.wav')
+        convert_to_wav('old_audio.wav', 'audio.wav')
+        delete_file('old_audio.wav')
+        converted_text = speech_to_text('audio.wav')
+        qrcode_generator(converted_text)
+        await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
+        await update.message.reply_photo('qr.png', converted_text)
+        delete_file('audio.wav')
+        delete_file('qr.png')
 
 
 if __name__ == '__main__':
