@@ -95,8 +95,6 @@ Note: audio file is not supported yet, record your voice and send it to me.
     await update.message.reply_text(help_text)
     
     
-# elevenlabs_API = '07a8878313d5d1255b5bef8288117ed9'
-    
 # handle reply
 async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type
