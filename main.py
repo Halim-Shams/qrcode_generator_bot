@@ -1,4 +1,5 @@
 import os
+import random
 from threading import Timer
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
@@ -8,8 +9,16 @@ from dotenv import load_dotenv
 import cv2, urllib.request
 import speech_recognition
 import soundfile
+from elevenlabs import generate, save, voices
 
 
+# Covert text to speech
+def text_to_speech(text: str):
+    elevenlabs_voices = voices()
+    random_voice = elevenlabs_voices[random.randint(0, 45)]
+    random_voice_id = random_voice.voice_id
+    audio = generate(text, voice=random_voice_id)
+    save(audio, 'audio.wav')
 
 # Covert audio to speech
 recognizer = speech_recognition.Recognizer()
@@ -32,8 +41,11 @@ def convert_to_wav(old_audio: str, new_audio: str):
 
 load_dotenv()
 
-API_TOKEN = os.getenv("API_TOKEN")
-BOT_USERNAME = os.getenv("BOT_USERNAME")
+API_TOKEN="7183725014:AAF9Q18sR2V3xCDnASIh_4B4-z5UyWbKvXQ"
+BOT_USERNAME="@qrcode_generat0r_bot"
+
+# API_TOKEN = os.getenv("API_TOKEN")
+# BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
@@ -63,7 +75,6 @@ def delete_file(filename: str):
     t = Timer(3.0, delete)
     t.start()
 
-
 # /start
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f'Hey dear {update.effective_user.first_name}, send me a text or link to hand you a QR code in return. Or, send me a QR code to hand you back the data. You can even send me your voice 🎙️ to convert it to QR code. 😉')
@@ -78,33 +89,50 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 🟡 Send me a QR code photo (keep it clear by cropping it) and I will return the data of that QR code.
 🟡 Send me a text, link or whatever else that is written to convert it to QR code photo.
 🟡 If you're lazy to type, just record your voice and I'll convert your voice to QR code photo.
+🟡 If you've no time to read the data of the QR code, command me by narrating it to you. Mentoin "/qr_to_audio" in the caption or the photo you're sending.
 
 Note: audio file is not supported yet, record your voice and send it to me.
 '''
     await update.message.reply_text(help_text)
     
     
+# elevenlabs_API = '07a8878313d5d1255b5bef8288117ed9'
+    
 # handle reply
 async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type
+    photo_caption = update.message.caption
     
     if update.message.photo:
-        photo = update.message.photo[0]
-        await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='typing')
-        print('photo detected')
-        file_id = photo.file_id
-        file_path = await context.bot.get_file(file_id=file_id)
-        qrcode_photo = file_path.file_path
-        decoded_data = qr_detector(qrcode_photo)
-        print(decoded_data)
-        await update.message.reply_text(decoded_data, reply_to_message_id=update.message.message_id)
+        if photo_caption == '/qr_to_audio':
+            photo = update.message.photo[0]
+            await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='record_audio')
+            print('photo with caption detected')
+            file_id = photo.file_id
+            file_path = await context.bot.get_file(file_id=file_id)
+            qrcode_photo = file_path.file_path
+            decoded_data = qr_detector(qrcode_photo)
+            print(decoded_data)
+            text_to_speech(decoded_data)
+            await update.message.reply_audio('audio.wav', reply_to_message_id=update.message.message_id)
+            delete_file('audio.wav')
+        else:
+            photo = update.message.photo[0]
+            await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='typing')
+            print('photo detected')
+            file_id = photo.file_id
+            file_path = await context.bot.get_file(file_id=file_id)
+            qrcode_photo = file_path.file_path
+            decoded_data = qr_detector(qrcode_photo)
+            print(decoded_data)
+            await update.message.reply_text(decoded_data, reply_to_message_id=update.message.message_id)
         
     elif update.message.text:
         text = update.message.text
         print('text detected')
         if message_type == 'supergroup':
-            await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
             if BOT_USERNAME in text:
+                await context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action='upload_photo')
                 new_text = text.replace(BOT_USERNAME, '').strip()
                 qrcode_generator(new_text)
                 await update.message.reply_photo('qr.png')
