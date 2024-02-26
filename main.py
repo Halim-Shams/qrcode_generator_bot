@@ -41,11 +41,8 @@ def convert_to_wav(old_audio: str, new_audio: str):
 
 load_dotenv()
 
-API_TOKEN="7183725014:AAF9Q18sR2V3xCDnASIh_4B4-z5UyWbKvXQ"
-BOT_USERNAME="@qrcode_generat0r_bot"
-
-# API_TOKEN = os.getenv("API_TOKEN")
-# BOT_USERNAME = os.getenv("BOT_USERNAME")
+API_TOKEN = os.getenv("API_TOKEN")
+BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
