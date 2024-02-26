@@ -12,12 +12,19 @@ import soundfile
 from elevenlabs import generate, save, voices
 
 
+load_dotenv()
+
+API_TOKEN = os.getenv("API_TOKEN")
+ELEVENLAB_API = os.getenv("ELEVENLAB_API")
+BOT_USERNAME = os.getenv("BOT_USERNAME")
+
+
 # Covert text to speech
 def text_to_speech(text: str):
     elevenlabs_voices = voices()
     random_voice = elevenlabs_voices[random.randint(0, 45)]
     random_voice_id = random_voice.voice_id
-    audio = generate(text, voice=random_voice_id)
+    audio = generate(text, voice=random_voice_id, api_key=ELEVENLAB_API)
     save(audio, 'audio.wav')
 
 # Covert audio to speech
@@ -38,11 +45,6 @@ def convert_to_wav(old_audio: str, new_audio: str):
     data, samplerate = soundfile.read(old_audio)
     soundfile.write(new_audio, data, samplerate, subtype='PCM_16')
 
-
-load_dotenv()
-
-API_TOKEN = os.getenv("API_TOKEN")
-BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 # Qrcode generator
 def qrcode_generator(text: str):
