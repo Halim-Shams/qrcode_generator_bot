@@ -120,6 +120,7 @@ async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
             file_id = photo.file_id
             file_path = await context.bot.get_file(file_id=file_id)
             qrcode_photo = file_path.file_path
+            print(qrcode_photo)
             decoded_data = qr_detector(qrcode_photo)
             print(decoded_data)
             await update.message.reply_text(decoded_data, reply_to_message_id=update.message.message_id)
