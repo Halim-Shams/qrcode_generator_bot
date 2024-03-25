@@ -21,14 +21,14 @@ ELEVENLAB_API = os.getenv("ELEVENLAB_API")
 BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 elevenlabs_client = ElevenLabs(
-    api_key = ELEVENLAB_API
+    api_key = ELEVENLAB_API,
 )
 
 # Covert text to speech
 def text_to_speech(text: str):
     elevenlabs_voices = elevenlabs_client.voices.get_all()
     random_voice = elevenlabs_voices.voices[random.randint(0, 45)]
-    audio = elevenlabs_client.generate(text, voice=random_voice)
+    audio = elevenlabs_client.generate(text=text, voice=random_voice)
     save(audio, 'audio.wav')
 
 # Covert audio to speech
