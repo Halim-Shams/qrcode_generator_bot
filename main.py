@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import cv2, urllib.request
 import speech_recognition
 import soundfile
-from elevenlabs import generate, save, voices
+from elevenlabs.client import generate, save, voices
 
 
 load_dotenv()
