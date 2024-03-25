@@ -28,8 +28,7 @@ elevenlabs_client = ElevenLabs(
 def text_to_speech(text: str):
     elevenlabs_voices = elevenlabs_client.voices.get_all()
     random_voice = elevenlabs_voices.voices[random.randint(0, 45)]
-    random_voice_id = random_voice.voice_id
-    audio = elevenlabs_client.generate(text, voice=random_voice_id, api_key=ELEVENLAB_API)
+    audio = elevenlabs_client.generate(text, voice=random_voice)
     save(audio, 'audio.wav')
 
 # Covert audio to speech
